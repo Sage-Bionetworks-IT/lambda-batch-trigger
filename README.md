@@ -1,11 +1,5 @@
-# lambda-template
-A GitHub template for quickly starting a new AWS lambda project.
-
-## Naming
-Naming conventions:
-* for a vanilla Lambda: `lambda-<context>`
-* for a Cloudformation Transform macro: `cfn-macro-<context>`
-* for a Cloudformation Custom Resource: `cfn-cr-<context>`
+# lambda-batch-utils
+An AWS lambda containing utility functions for AWS batch
 
 ## Development
 
@@ -54,9 +48,9 @@ which requires permissions to upload to Sage
 ```shell script
 sam package --template-file .aws-sam/build/template.yaml \
   --s3-bucket essentials-awss3lambdaartifactsbucket-x29ftznj6pqw \
-  --output-template-file .aws-sam/build/lambda-template.yaml
+  --output-template-file .aws-sam/build/lambda-batch-utils.yaml
 
-aws s3 cp .aws-sam/build/lambda-template.yaml s3://bootstrap-awss3cloudformationbucket-19qromfd235z9/lambda-template/master/
+aws s3 cp .aws-sam/build/lambda-batch-utils.yaml s3://bootstrap-awss3cloudformationbucket-19qromfd235z9/lambda-batch-utils/master/
 ```
 
 ## Publish Lambda
@@ -66,7 +60,7 @@ Publishing the lambda makes it available in your AWS account.  It will be access
 the [serverless application repository](https://console.aws.amazon.com/serverlessrepo).
 
 ```shell script
-sam publish --template .aws-sam/build/lambda-template.yaml
+sam publish --template .aws-sam/build/lambda-batch-utils.yaml
 ```
 
 ### Public access
@@ -81,26 +75,48 @@ aws serverlessrepo put-application-policy \
 
 ## Install Lambda into AWS
 
-### Sceptre
-Create the following [sceptre](https://github.com/Sceptre/sceptre) file
-config/prod/lambda-template.yaml
+### CFN Nested Stack
+We recommend installing this lambda as a nested cloudformation stack.
+
+Add this snippet to the parent cloudformation stack:
 
 ```yaml
-template_path: "remote/lambda-template.yaml"
-stack_name: "lambda-template"
+LambdaBatchUtils:
+  Type: 'AWS::CloudFormation::Stack'
+  Properties:
+    TemplateURL: 'https://bootstrap-awss3cloudformationbucket-19qromfd235z9.s3.amazonaws.com/lambda-batch-utils/master/lambda-batch-utils.yaml'
+    Parameters:
+      JOB_NAME=!Sub '${AWS::StackName}-my-job'
+      JOB_QUEUE=!Ref JobQueue
+      JOB_DEFINITION=!Ref JobDefition
+```
+
+Then deploy the parent stack.
+
+### Sceptre
+Alternatively it can be deployed with [sceptre](https://github.com/Sceptre/sceptre) by creating the following
+file config/prod/lambda-batch-utils.yaml
+
+```yaml
+template:
+  type: http
+  url: https://bootstrap-awss3cloudformationbucket-19qromfd235z9.s3.amazonaws.com/lambda-batch-utils/master/lambda-batch-utils.yaml
+stack_name: "lambda-batch-utils"
 stack_tags:
   Department: "Platform"
   Project: "Infrastructure"
   OwnerEmail: "it@sagebase.org"
-hooks:
-  before_launch:
-    - !cmd "curl https://bootstrap-awss3cloudformationbucket-19qromfd235z9.s3.amazonaws.com/lambda-template/master/lambda-template.yaml --create-dirs -o templates/remote/lambda-template.yaml"
+parameters:
+  JobName=my-batch-job
+  JobQueue: !stack_output_external script-runner::JobQueueArn
+  JobDefinition: !stack_output_external script-runner::JobDefinitionArn
 ```
 
 Install the lambda using sceptre:
 ```shell script
-sceptre --var "profile=my-profile" --var "region=us-east-1" launch prod/lambda-template.yaml
+sceptre --var "profile=my-profile" --var "region=us-east-1" launch prod/lambda-batch-utils.yaml
 ```
+
 
 ### AWS Console
 Steps to deploy from AWS console.
