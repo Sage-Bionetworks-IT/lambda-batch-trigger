@@ -86,9 +86,9 @@ LambdaBatchUtils:
   Properties:
     TemplateURL: 'https://bootstrap-awss3cloudformationbucket-19qromfd235z9.s3.amazonaws.com/lambda-batch-utils/master/lambda-batch-utils.yaml'
     Parameters:
-      JOB_NAME=!Sub '${AWS::StackName}-my-job'
-      JOB_QUEUE=!Ref JobQueue
-      JOB_DEFINITION=!Ref JobDefition
+      JOB_NAME: !Sub '${AWS::StackName}-my-job'
+      JOB_QUEUE: !Ref JobQueue
+      JOB_DEFINITION: !Ref JobDefition
 ```
 
 Then deploy the parent stack.
@@ -107,7 +107,7 @@ stack_tags:
   Project: "Infrastructure"
   OwnerEmail: "it@sagebase.org"
 parameters:
-  JobName=my-batch-job
+  JobName: my-batch-job
   JobQueue: !stack_output_external script-runner::JobQueueArn
   JobDefinition: !stack_output_external script-runner::JobDefinitionArn
 ```
