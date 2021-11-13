@@ -75,6 +75,10 @@ aws serverlessrepo put-application-policy \
 
 ## Install Lambda into AWS
 
+### Parameters
+The list of inputs for this lambda can be found in the `Parameters` section of the
+[template.yaml](template.yaml) file.
+
 ### CFN Nested Stack
 We recommend installing this lambda as a nested cloudformation stack.
 
@@ -117,7 +121,6 @@ Install the lambda using sceptre:
 sceptre --var "profile=my-profile" --var "region=us-east-1" launch prod/lambda-batch-trigger.yaml
 ```
 
-
 ### AWS Console
 Steps to deploy from AWS console.
 
@@ -128,6 +131,21 @@ Steps to deploy from AWS console.
 3. Select application to install
 4. Enter Application settings
 5. Click Deploy
+
+### Triggering
+
+Once this lambda is deployed as a cloudformation stack, locate the `SubmitJobApi` output of the
+stack and make a request to it with the curl command.  It will look something like this
+
+```shell
+curl https://jmu6d85zp3.execute-api.us-east-1.amazonaws.com/Prod/submitjob
+```
+
+That should trigger the batch job.
+
+### Debugging
+This lambda writes debug messages out to a cloudwatch log group, it should be under
+`/aws/lambda/..`.  Locate it and view the messages.
 
 ## Releasing
 
