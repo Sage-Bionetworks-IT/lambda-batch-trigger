@@ -1,3 +1,4 @@
+import json
 import boto3
 import logging
 import os
@@ -35,10 +36,23 @@ def lambda_handler(event, context):
             jobDefinition=job_definition
         )
         jobId = submitJobResponse['jobId']
-        log.info(f'Submitted job [{job_name} - {jobId}] to the job queue [{job_queue}]')
+        message = f'Submitted job [{job_name} - {jobId}] to the job queue [{job_queue}]'
+        log.info(message)
+        return {
+          "statusCode": 200,
+          "body": json.dumps({
+            "message": message
+          }),
+        }
     except ClientError as e:
-        log.error(e.response['Error']['Message'])
-        raise e
+        message = e.response['Error']['Message']
+        log.error(message)
+        return {
+          "statusCode": 400,
+          "body": json.dumps({
+            "message": message
+          }),
+        }
 
 if __name__ == "__main__":
     lambda_handler("event","context")
