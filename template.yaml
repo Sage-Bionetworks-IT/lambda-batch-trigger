@@ -78,6 +78,7 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSBatchServiceEventTargetRole
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

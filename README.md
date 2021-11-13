@@ -86,9 +86,9 @@ LambdaBatchTrigger:
   Properties:
     TemplateURL: 'https://bootstrap-awss3cloudformationbucket-19qromfd235z9.s3.amazonaws.com/lambda-batch-trigger/master/lambda-batch-trigger.yaml'
     Parameters:
-      JOB_NAME: !Sub '${AWS::StackName}-my-job'
-      JOB_QUEUE: !Ref JobQueue
-      JOB_DEFINITION: !Ref JobDefition
+      JobName: !Sub '${AWS::StackName}-my-job'
+      JobQueue: !Ref JobQueue
+      JobDefinition: !Ref JobDefition
 ```
 
 Then deploy the parent stack.
