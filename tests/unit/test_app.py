@@ -8,10 +8,11 @@ from submit_job import app
 
 
 @pytest.fixture
-def batch_client():
+def batch_client(mocker):
     """
     This creates a single client used by all tests
     """
+    mocker.patch.dict(os.environ, {'AWS_DEFAULT_REGION': 'test-region'})
     return boto3.client('batch')
 
 
