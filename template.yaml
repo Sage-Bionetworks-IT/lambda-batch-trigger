@@ -45,7 +45,7 @@ Resources:
     Properties:
       CodeUri: .
       Handler: submit_job/app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.13
       Role: !GetAtt FunctionRole.Arn
       Environment:
         Variables:
